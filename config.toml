@@ -1,0 +1,26 @@
+baseURL = "https://dtaylor.uk/"
+title = "David Taylor"
+
+theme = "robust"
+
+googleAnalytics = "UA-104948004-1" # Optional
+disqusShortname = "david-taylor"
+
+publishDir = "docs"
+
+[params]
+dateformat = "2 Jan 2006" # Optional
+  # Fonts settings.
+#  googlefonts = "https://fonts.googleapis.com/css?family=Lobster|Lato:400,700" # Optional, Include google fonts.
+#  fontfamily = "Lato,YuGothic,'Hiragino Kaku Gothic Pro',Meiryo,sans-serif" # Optional, Override body font family.
+#  logofontfamily = "Lobster, cursive" # Optional, Override logo font.
+
+#[outputs]
+#page = [ "HTML", "AMP" ] # if you want AMP enable.
+
+[permalinks]
+  blog = "/blog/:year/:month/:slug/"
+
+[taxonomies]
+  tag = "tags"
+
