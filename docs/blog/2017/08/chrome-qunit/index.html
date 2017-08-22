@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="pinterest" content="nopin">
+<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+<meta name="theme-color" content="#263238">
+
+<meta name="generator" content="Hugo 0.26" />
+
+<link rel="apple-touch-icon" href="https://dtaylor.uk/images/logo.png">
+
+
+<link rel="canonical" href="https://dtaylor.uk/blog/2017/08/chrome-qunit/">
+
+
+    
+    <link href="//fonts.googleapis.com/css?family=Roboto+Slab:400,700" rel="stylesheet">
+    
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/solarized_dark.min.css">
+    <title>Creating a QUnit test harness for headless Chrome - David Taylor</title>
+    
+
+<meta name="description" content="Making use of Puppeteer to create a CLI QUnit runner">
+
+<meta property="og:title" content="Creating a QUnit test harness for headless Chrome - David Taylor">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://dtaylor.uk/blog/2017/08/chrome-qunit/">
+<meta property="og:image" content="https://dtaylor.uk/images/default.png">
+<meta property="og:site_name" content="David Taylor">
+<meta property="og:description" content="Making use of Puppeteer to create a CLI QUnit runner">
+<meta property="og:locale" content="ja_JP">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="David Taylor">
+<meta name="twitter:url" content="https://dtaylor.uk/blog/2017/08/chrome-qunit/">
+<meta name="twitter:title" content="Creating a QUnit test harness for headless Chrome - David Taylor">
+<meta name="twitter:description" content="Making use of Puppeteer to create a CLI QUnit runner">
+<meta name="twitter:image" content="https://dtaylor.uk/images/default.png">
+
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "NewsArticle",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id":"https://dtaylor.uk/"
+    },
+    "headline": "Creating a QUnit test harness for headless Chrome - David Taylor",
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://dtaylor.uk/images/default.png",
+      "height": 800,
+      "width": 800
+    },
+    "datePublished": "2017-08-20T12:04:19JST",
+    "dateModified": "2017-08-20T12:04:19JST",
+    "author": {
+      "@type": "Person",
+      "name": "David Taylor"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "David Taylor",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dtaylor.uk/images/logo.png",
+        "width": 600,
+        "height": 60
+      }
+    },
+    "description": "Making use of Puppeteer to create a CLI QUnit runner"
+  }
+</script>
+
+
+    <style>
+      html { font-size: 18px; background-color: rgba(236,239,241,.5);}@media (max-width: 768px) { html { font-size: 15px; }}body { color: #333; font-family: 'Roboto Slab','ヒラギノ角ゴ Pro W3','Hiragino Kaku Gothic Pro',メイリオ,Meiryo,sans-serif; font-feature-settings : "palt"; font-size: inherit; line-height: 1rem; margin: 0; padding: 0;}h1, h2, h3, h4, h5 ,h6 { font-size: 1rem; font-weight: 700; line-height: 1rem; margin: 0;}hr { border: 0; border-top: 1px dashed #cfd8dc; margin: 1rem 0;}p { margin: 0; line-height: 1rem;}a { color: #2196f3; text-decoration: none; transition-duration: .3s;}ul, ol { margin: 0; padding: 0;}table { border-collapse: collapse;}th, td { font-size: .8rem; padding: .5rem;}tr { border-bottom: 1px dashed #ddd;}/* Layouts */main,aside { display: block;}main { padding: 1rem 0 3rem 0; }aside.h { padding: 3rem 0; }main.f,aside.f { background-color: #333; border-top: 2px dashed #fff; border-bottom: 2px dashed #fff;}.l-container { position: relative; max-width: 68rem; margin: 0 auto; padding: 0 1rem;}.l-container.thin { max-width: 44rem;}.social-links { margin-top: 0.4rem;}.l-header { background-color: #fff; box-shadow: 0 0 0 1px rgba(63,63,68,.05), 0 1px 3px rgba(63,63,68,.1), 0 1px 2px rgba(0,0,0,.05); padding: 1rem 0; text-align: center;}.l-footer { background-color: #fff; box-shadow: 0 0 0 1px rgba(63,63,68,.05), 0 1px 3px rgba(63,63,68,.1), 0 1px 2px rgba(0,0,0,.05); font-size: .6rem; font-weight: 700; padding: 1rem 0;}@media (max-width: 768px) { .l-sidebar { margin-top: 4rem; }}.mrow { margin: 0 -1rem; overflow: hidden;}.mcol { box-sizing: border-box; float: left; padding: 0 1rem;}.c6 { width: 50%; }.c4 { width: 33.26323833%; }.c8 { width: 66.66666%; }@media (max-width: 768px) { .mcol { width: 100%; float: none; }}.logo a { font-size: 1.4rem; line-height: 1.5rem; font-weight: 700; color: #333;}.articles { margin: -1rem 0; margin-bottom: 1rem;}.articles.sm { margin: -.5rem 0; margin-bottom: 0;}article { border-radius: 4px; overflow: hidden;}article.li { background-color: #fff; box-shadow: 0 0 0 1px rgba(63,63,68,.05), 0 1px 3px rgba(63,63,68,.1), 0 1px 2px rgba(0,0,0,.05); height: 20rem; overflow: hidden; margin: 1rem 0;}article.li > a { display: block; color: #333;}article.li .inner { padding: 1rem;}article.li .thumb { height: 8rem;}article.li .title { color: #333; font-size: 1.2rem; line-height: 1.5rem; margin-bottom: .5rem;}article.li .summary { font-size: .8rem; height: 6rem; overflow: hidden; margin-top: 1rem;}article.lism { background-color: #fff; box-shadow: 0 0 0 1px rgba(63,63,68,.05), 0 1px 3px rgba(63,63,68,.1), 0 1px 2px rgba(0,0,0,.05); margin: .5rem 0;}article.lism::after { content: ''; display: block; clear: both;}article.lism > a { display: block; color: #333;}article.lism .inner { display: table-cell; vertical-align: middle; height: 5rem; padding-left: .5rem;}article.lism .thumb { width: 5rem; height: 5rem; float: left;}article.lism .title { font-weight: 700; line-height: 1.25rem; margin-bottom: .25rem;}article.sn { background-color: #fff; box-shadow: 0 0 0 1px rgba(63,63,68,.05), 0 1px 3px rgba(63,63,68,.1), 0 1px 2px rgba(0,0,0,.05); margin-bottom: 1rem;}article.sn .thumb { height: 20rem;}@media (max-width: 768px) { article.sn .thumb { height: 10rem; }}article.sn > .article-header,article.sn > .article-body,article.sn .article-footer { padding: 2rem;}article.sn > .article-body { padding: 0 2rem;}@media (max-width: 768px) { article.sn > .article-header, article.sn > .article-body, article.sn .article-footer { padding: 1rem; } article.sn > .article-body { padding: 0 1rem; }}article.sn > .article-header .title { font-size: 1.8rem; line-height: 2rem; margin-bottom: .5rem;}@media (max-width: 768px) { article.sn > .article-header .title { font-size: 1.4rem; line-height: 1.5rem; }}article.sn > .article-header .facts { margin-bottom: 1rem;}article.sn > .article-body { margin-bottom: 1.5rem;}article.sn > .article-body h2 { border-bottom: .25rem solid #333; font-size: 1.2rem; line-height: 1.5rem; margin: 1.5rem 0; padding: .5rem 0;}article.sn > .article-body h3 { border-left: .5rem solid #333; line-height: 1.5rem; margin: 1.5rem 0; padding: .125rem .5rem;}article.sn > .article-body ul,article.sn > .article-body ol { margin: 1.5rem 0; padding-left: 1.5rem;}article.sn > .article-body li { padding-bottom: .5rem; line-height: 1.5rem;}article.sn > .article-body li:last-child { padding-bottom: 0;}article.sn > .article-body p { margin: 1rem 0; line-height: 1.5rem;}article.sn > .article-body strong,article.sn > .article-body em { font-style: normal; font-weight: 700;}article.sn > .article-body strong { box-shadow: 0 -.5rem 0 0 #ffc107 inset;}article.sn > .article-body em { color: #8bc34a;}article.sn > .article-body code,article.sn > .article-body pre { font-family: Menlo, Consolas, monospace; font-size: .7rem;}article.sn > .article-body pre { background-color: #333; color: #fff; line-height: 1rem; margin: 1.5rem -2rem; overflow: auto;}@media (max-width: 768px) { article.sn > .article-body pre { margin: 1.5rem -1rem; }}article.sn > .article-body pre > code { display: block; padding: 1rem 2rem;}@media (max-width: 768px) { article.sn > .article-body pre > code { padding: 1rem; }}article.sn > .article-body p code { background-color: #eceff1; color: #333; border-radius: 4px; margin: 0 .25rem; padding: .375rem; white-space: nowrap;}article.sn > .article-body blockquote { position: relative; border-left: .25rem solid #333; font-size: .8rem; padding: .125rem 1rem; margin: 1.5rem 0;}@media (max-width: 768px) { article.sn > .article-body blockquote { font-size: 1rem; }}article.sn > .article-body blockquote p { margin: .5rem 0; line-height: 1rem;}article.sn > .article-body figure { margin: 1.5rem 0;}article.sn > .article-body figure img,article.sn > .article-body figure amp-img { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); max-width: 100%;}article.sn > .article-body figcaption { color: #cfd8dc; font-size: .8rem; font-weight: 700; margin-top: .5rem;}.facts li { display: inline; font-size: .8rem; margin-right: 1rem;}.facts i { color: #cfd8dc; margin-right: .5em;}.facts.sm li { font-size: .7rem;}.sections.sidebar { margin: -1rem 0;}.sections.footer { margin: -1rem 0;}section.sidebar { margin: 2rem 0;}section.sidebar > header { font-size: .8rem; font-weight: 700; letter-spacing: 4px; text-align: center; margin: 1.5rem 0;}section.footer { margin: 1rem 0;}section.footer > header { font-size: .8rem; margin: .5rem 0;}section.footer > header::before { content: "- ";}section.footer > header a { font-weight: 700; color: #333; text-decoration: underline;}.terms { margin: -.25rem;}.terms li { display: inline-block;}.terms a { display: block; float: left; background-color: #333; border-radius: 4px; color: #fff; font-size: .7rem; margin: .25rem; padding: 0 .75rem; line-height: 1.75rem;}.paging { text-align: center; padding: 1rem 0;}.paging a { display: inline-block; background-color: #fff; box-shadow: 0 0 0 1px rgba(63,63,68,.05), 0 1px 3px rgba(63,63,68,.1), 0 1px 2px rgba(0,0,0,.05); border-radius: 4px; color: #333; padding: 0 1rem; line-height: 3rem;}.page-title { text-align: center; margin: 1rem 0;}.page-title::after { content: ''; display: block; border-bottom: .25rem solid #333; width: 3rem; margin: 1.5rem auto;}.page-title > .title { font-size: 1.2rem; line-height: 1.5rem;}/* Parts:breadcrumb */.crumb ol { text-overflow: ellipsis; color: #cfd8dc; white-space: nowrap; overflow: hidden;}.crumb li { display: inline; font-size: .8rem;}.crumb li::after { content: '›'; margin: 0 .25rem 0 .5rem;}.crumb li:last-child::after { content: '';}.crumb a { color: #cfd8dc;}.crumb i { margin-right: .5em;}.share { padding: 0;}.share a { display: inline-block; box-shadow: 0 0 0 1px rgba(63,63,68,.05), 0 1px 3px rgba(63,63,68,.1), 0 1px 2px rgba(0,0,0,.05); min-width: 1rem; height: 2rem; border-radius: 4px; color: #333; font-size: .8rem; font-weight: 700; line-height: 2rem; text-align: center; padding: 0 .5rem;}.adj article.lism { margin-bottom: 1rem;}.adj header { font-weight: 700; font-size: .8rem;}.toc { padding: 0 2rem;}@media (max-width: 768px) { .toc { padding: 0 1rem; }}.toc { margin: 1rem 0;}.toc nav>ul { background-color: #eceff1; border-radius: 4px; display: inline-block; font-size: .8rem; padding: .5rem 1rem; word-break: break-all; list-style: none;}.toc ul { padding: 0;}.toc ul ul { padding-left: 1rem;}.toc ul ul ul { padding-left: 1rem;}.toc li { color: #90a4ae;}.toc ul ul>li { font-weight: 700; margin: .5rem 0; list-style-type: decimal;}.toc ul ul ul>li { list-style-type: disc; font-weight: 500;}.thumb { background-image: url(https://dtaylor.uk/images/default.jpg); background-size: cover;}
+      
+      
+    </style>
+
+  </head>
+
+  <body>
+    
+    
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-104948004-1', 'auto');
+ga('send', 'pageview');
+</script>
+
+    
+
+    <header class="l-header">
+      <div class="l-container">
+        <div class="logo">
+          <a href="https://dtaylor.uk/">David Taylor</a>
+        </div>
+      </div>
+
+      <div class="social-links">
+      <a href="http://twitter.com/davidtaylorhq" title="Twitter" class="tw" target="_blank" rel="nofollow"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+      <a href="http://github.com/davidtaylorhq" title="GitHub" class="tw" target="_blank" rel="nofollow"><i class="fa fa-github" aria-hidden="true"></i></a>
+      <a href="mailto:david@taylorhq.com" title="Email" class="tw" target="_blank" rel="nofollow"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+      </div>
+    </header>
+
+    <main>
+      <div class="l-container">
+        
+<div class="mrow">
+  <div class="mcol c8">
+
+    <article class="sn">
+
+  <div class="thumb thumb-9202d443e0a5e7bb1b8156a1042b5010"></div>
+
+  <header class="article-header">
+    <h1 class="title">Creating a QUnit test harness for headless Chrome</h1>
+
+    <ul class="facts">
+      <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2017-08-20T12:04:19JST">20 Aug 2017</time></li>
+      
+      
+    </ul>
+
+    
+  </header>
+
+  
+  <div class="toc">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#taking-control-of-chrome">Taking control of Chrome</a></li>
+<li><a href="#creating-a-harness-for-qunit-tests">Creating a harness for QUnit tests</a>
+<ul>
+<li><a href="#basic-setup">Basic setup</a></li>
+<li><a href="#browser-harness-communication">Browser &gt; harness communication</a></li>
+<li><a href="#running-the-tests">Running the tests</a></li>
+<li><a href="#success">Success?</a></li>
+</ul></li>
+<li><a href="#great-how-do-i-use-it">Great, how do I use it?</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+  
+
+  <div class="article-body">
+
+<p>When running acceptence tests in a continuous integration system, we often need some way to simulate a browser. For some time, <a href="http://phantomjs.org/">PhantomJS</a> has been the go-to option, thanks to its simple API and lightweight nature.</p>
+
+<p>Chrome 59 recently launched with support for <a href="https://developers.google.com/web/updates/2017/04/headless-chrome">&ldquo;headless mode&rdquo;</a>:</p>
+
+<blockquote>
+<p>It&rsquo;s a way to run the Chrome browser in a headless environment. Essentially, running Chrome without chrome! It brings all modern web platform features provided by Chromium and the Blink rendering engine to the command line.</p>
+</blockquote>
+
+<p>Soon after this announcment, came the news that PhantomJS would <a href="https://groups.google.com/d/msg/phantomjs/9aI5d-LDuNE/5Z3SMZrqAQAJ">cease to be maintained</a>:</p>
+
+<blockquote>
+<p>Headless Chrome is coming</p>
+
+<p>I think people will switch to it, eventually. Chrome is faster and more stable than PhantomJS. And it doesn&rsquo;t eat memory like crazy.</p>
+</blockquote>
+
+<p>The <a href="https://discourse.org">Discourse</a> project currently uses PhantomJS to run its QUnit tests, so I decided to see what a switch to headless Chrome would look like. The resultant NPM module is not tied to Discourse, and should work for any project utilising QUnit.</p>
+
+<h2 id="taking-control-of-chrome">Taking control of Chrome</h2>
+
+<p>The first thing to realise is that headless Chrome does not offer any &lsquo;new&rsquo; way of controlling the browser programmatically. Essentially all the <code>--headless</code> flag does is remove the need for a screen (or virtual screen) to display the user interface on.</p>
+
+<p>Fortunately, Chrome already has a built-in solution for programmatic control in the form of its <a href="https://chromedevtools.github.io/devtools-protocol/">Chrome Devtools Protocol</a>. Starting Chrome with the <code>--remote-debugging-port</code> flag opens up a WebSocket based protocol for debugging.</p>
+
+<p>The development of client libraries has exploded since the launch of headless chrome, with a number of them &lsquo;trending&rsquo; on GitHub at the time of writing. These seem to fall into two categories: those with low-level APIs mapping closely to the available features (e.g. <a href="https://github.com/cyrus-and/chrome-remote-interface">chrome-remote-interface</a>, and those with higher-level APIs to easier write functional tests (e.g. <a href="https://github.com/graphcool/chromeless">Chromeless</a>).</p>
+
+<p>Discourse already utilises QUnit for writing the tests themselves, so a simpler, lower-level API should suffice. I chose the <a href="https://github.com/GoogleChrome/puppeteer">puppeteer</a> library because it was created and is maintained by the same team that maintain the Chromium DevTools interface. It also includes a bundled version of Chromium, guarenteed to be compatible with the included API. This comes in at just under 100mb, which is significantly less than the ~450mb required to install the full version of Chrome on Ubuntu.</p>
+
+<p>With Node.js 8 installed, Puppeteer can be installed simply by running</p>
+
+<pre><code class="language-shell">npm install puppeteer
+</code></pre>
+
+<p>To try it out, make a javascript file <code>test.js</code> containing</p>
+
+<pre><code class="language-javascript">const puppeteer = require('puppeteer');
+
+(async () =&gt; {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://dtaylor.uk');
+  await page.screenshot({path: 'example.png'});
+
+  browser.close();
+})();
+</code></pre>
+
+<p>and execute by running <code>node test.js</code>.</p>
+
+<h2 id="creating-a-harness-for-qunit-tests">Creating a harness for QUnit tests</h2>
+
+<p>Let&rsquo;s assume that there is already a server running which serves the QUnit tests at <code>localhost:3000/qunit</code>.</p>
+
+<p>The basic logic of the harness is as follows:</p>
+
+<ol>
+<li>Load the QUnit test page</li>
+<li>Attach to QUnit&rsquo;s events to log results for each test</li>
+<li>Once finished, print a summary</li>
+<li>Exit with an appropriate exit code for success/failure</li>
+</ol>
+
+<h3 id="basic-setup">Basic setup</h3>
+
+<p>Because our tests will be running inside Chrome, we can&rsquo;t directly see the error logs. To pass them through to the node logs, we attach to the &lsquo;console&rsquo; event on the page object:</p>
+
+<pre><code class="language-javascript">await page.on('console', (...params) =&gt; {
+  for (let i = 0; i &lt; params.length; ++i)
+    console.log(`${params[i]}`);
+});
+</code></pre>
+
+<h3 id="browser-harness-communication">Browser &gt; harness communication</h3>
+
+<p>QUnit has four levels of event we want to capture: an individual assertion, a test, a module, and the whole test suite. We can get callbacks for these three events using <code>QUnit.log</code>, <code>QUnit.testDone</code>, <code>QUnit.moduleDone</code> and <code>QUnit.done</code>.</p>
+
+<p>Puppeteer allows us to register functions under the top level <code>window</code> object in the browser, to allow us to send information from the browser back to our harness.</p>
+
+<pre><code class="language-javascript">await page.exposeFunction('harness_log', context =&gt; {
+  if (context.result) { return; } // If assertion successful don't log
+  
+  // Logic here to log result of an assertion
+});
+</code></pre>
+
+<p>Similar functions are setup for <code>testDone</code> and <code>moduleDone</code>, check the full source code for the details.</p>
+
+<p>Notably, these functions are attached to the <code>window</code> object as <code>async</code> functions. This means that when called they immediately return a Promise, and do not block the code in the browser. This is good for performance, but means we cannot use them directly as callback functions in QUnit - we need to wrap them inside another &lsquo;synchronous&rsquo; function.</p>
+
+<h3 id="running-the-tests">Running the tests</h3>
+
+<p>Now we have communication from the browser to the harness, we&rsquo;re ready to load the page. Once it&rsquo;s loaded, some code is run to set any necessary QUnit variables and attach the QUnit event handlers.</p>
+
+<pre><code class="language-javascript">await page.evaluate(() =&gt; {
+  QUnit.config.testTimeout = 10000;
+
+  QUnit.moduleDone((context) =&gt; { window.harness_moduleDone(context); });
+  QUnit.testDone((context) =&gt; { window.harness_testDone(context); });
+  QUnit.log((context) =&gt; { window.harness_log(context); });
+  QUnit.done((context) =&gt; { window.harness_done(context); });
+
+  console.log(&quot;Running: &quot; + JSON.stringify(QUnit.urlParams));
+});
+</code></pre>
+
+<p>After this, we simply wait for the <code>done</code> callback. If the timeout is reached, the process is ended with a failure code:</p>
+
+<pre><code>function wait(ms) {
+  return new Promise(resolve =&gt; setTimeout(resolve, ms));
+}
+await wait(timeout);
+
+console.error(&quot;Tests timed out&quot;);
+browser.close();
+process.exit(124);
+</code></pre>
+
+<h3 id="success">Success?</h3>
+
+<p>When QUnit is done, the <code>harness_done</code> function is called. This prints out a summary, and finally exits with an appropriate status code:</p>
+
+<pre><code class="language-javascript">await page.exposeFunction('harness_done', context =&gt; {
+  if (moduleErrors.length &gt; 0) {
+    for (var idx=0; idx&lt;moduleErrors.length; idx++) {
+      console.error(moduleErrors[idx]+&quot;\n&quot;);
+    }
+  }
+
+  var stats = [
+    &quot;Time: &quot; + context.runtime + &quot;ms&quot;,
+    &quot;Total: &quot; + context.total,
+    &quot;Passed: &quot; + context.passed,
+    &quot;Failed: &quot; + context.failed
+  ];
+  console.log(stats.join(&quot;, &quot;));
+  
+  browser.close();
+  if (context.failed &gt; 0){
+    process.exit(1);
+  }else{
+    process.exit();
+  }
+});
+</code></pre>
+
+<h2 id="great-how-do-i-use-it">Great, how do I use it?</h2>
+
+<p>Simply run</p>
+
+<pre><code class="language-shell">npm install -g qunit-puppeteer
+puppeteer-qunit http://localhost:3000/qunit
+</code></pre>
+
+<p>The output will look something like this:</p>
+
+<pre><code class="language-plain">Running: {}
+
+............................................................................................................................................................................
+
+Time: 27157ms, Total: 173, Passed: 173, Failed: 0
+</code></pre>
+
+<p>Source code for the project can be found <a href="https://github.com/davidtaylorhq/qunit-puppeteer">on GitHub</a></p>
+</div>
+
+  <footer class="article-footer">
+
+    
+    
+
+    
+    
+    
+    <section class="footer">
+      <header>
+        <a href="https://dtaylor.uk/tags/">TAGS</a>
+      </header>
+      <div>
+        <ul class="terms">
+          
+          <li><a href="https://dtaylor.uk/tags/discourse/">discourse</a></li>
+          
+          <li><a href="https://dtaylor.uk/tags/testing/">testing</a></li>
+          
+        </ul>
+      </div>
+    </section>
+    
+    
+  </footer>
+
+</article>
+
+
+    <div class="adj">
+      <div class="mrow">
+        
+        
+      </div>
+    </div>
+
+    <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "david-taylor" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  </div>
+  <div class="mcol c4">
+    <aside class="l-sidebar">
+
+  <div class="sections sidebar">
+    <section class="sidebar">
+      <header>LATEST</header>
+      <div>
+        <div class="articles sm">
+          
+          <article class="lism">
+  <a href="https://dtaylor.uk/blog/2017/08/chrome-qunit/">
+    <div class="thumb thumb-9202d443e0a5e7bb1b8156a1042b5010"></div>
+
+    <div class="inner">
+      <div class="title">Creating a QUnit test harness for headless Chrome</div>
+
+      <ul class="facts sm">
+        <li><i class="fa fa-calendar" aria-hidden="true"></i><time datetime="2017-08-20T12:04:19JST">20 Aug 2017</time></li>
+        
+        
+      </ul>
+
+    </div>
+  </a>
+</article>
+
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="sidebar">
+      <header>TAGS</header>
+      <div>
+        <ul class="terms">
+          <li><a href="https://dtaylor.uk/tags/discourse">discourse</a></li><li><a href="https://dtaylor.uk/tags/testing">testing</a></li>
+        </ul>
+      </div>
+    </section>
+    
+  </div>
+
+</aside>
+
+  </div>
+</div>
+
+      </div>
+    </main>
+
+    <footer class="l-footer">
+      <div class="l-container">
+        <p><span class="h-logo">&copy; David Taylor</span></p>
+        <aside>
+          <p>Powered by <a href="https://gohugo.io/">Hugo</a>.</p>
+          <p>Theme adapted from <a href="https://github.com/dim0627/hugo_theme_robust">Robust</a>.</p>
+        </aside>
+      </div>
+    </footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+      hljs.registerLanguage('plain', function(hljs) {
+        return { case_insensitive: true, keywords: '', contains: [] };
+      });
+      hljs.initHighlightingOnLoad();
+    </script>
+  </body>
+</html>
+

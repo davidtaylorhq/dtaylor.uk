@@ -16,6 +16,7 @@
       {{ with .Site.Params.fontfamily }} body { font-family: {{ . | safeCSS }}; } {{ end }}
       {{ with .Site.Params.logofontfamily }} .h-logo { font-family: {{ . | safeCSS }}; } {{ end }}
     </style>
+
   </head>
 
   <body>
@@ -55,6 +56,12 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+      hljs.registerLanguage('plain', function(hljs) {
+        return { case_insensitive: true, keywords: '', contains: [] };
+      });
+      hljs.initHighlightingOnLoad();
+    </script>
   </body>
 </html>
 
