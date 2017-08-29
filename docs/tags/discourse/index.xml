@@ -5,17 +5,17 @@
     <link>https://dtaylor.uk/tags/discourse/</link>
     <description>Recent content in Discourse on David Taylor</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 29 Sep 2017 12:04:19 +0100</lastBuildDate>
+    <lastBuildDate>Tue, 29 Aug 2017 12:04:19 +0100</lastBuildDate>
     
 	<atom:link href="https://dtaylor.uk/tags/discourse/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Summer of Code with Discourse</title>
-      <link>https://dtaylor.uk/blog/2017/09/gsoc_with_discourse/</link>
-      <pubDate>Fri, 29 Sep 2017 12:04:19 +0100</pubDate>
+      <link>https://dtaylor.uk/blog/2017/08/gsoc_with_discourse/</link>
+      <pubDate>Tue, 29 Aug 2017 12:04:19 +0100</pubDate>
       
-      <guid>https://dtaylor.uk/blog/2017/09/gsoc_with_discourse/</guid>
+      <guid>https://dtaylor.uk/blog/2017/08/gsoc_with_discourse/</guid>
       <description>I have spent this summer working on the Discourse project as part of Google Summer of Code. The end result of my project is the discourse-chat-integration plugin.
 The &amp;lsquo;Discourse Chatroom Integration Plugin&amp;rsquo; allows sending notifications about new Discourse posts to &amp;lsquo;group chats&amp;rsquo; on a large number of instant messaging platforms including Slack, Telegram, Discord, HipChat, Mattermost, Matrix, Zulip and Rocket Chat. Notifications can be triggered by new topics, new replies, messages to a group, or mentions of a group.</description>
     </item>

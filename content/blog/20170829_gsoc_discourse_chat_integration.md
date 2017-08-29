@@ -1,7 +1,7 @@
 +++
 title = "Summer of Code with Discourse"
 slug = "gsoc_with_discourse"
-date = 2017-09-29T12:04:19+01:00
+date = 2017-08-29T12:04:19+01:00
 thumbnail = "images/gsoc_17.jpg"
 tags = ["discourse"]
 description = "Creating a chatroom integration plugin for Discourse, the open source discussion software"
@@ -46,7 +46,7 @@ Throughout the project I took some time to work on smaller, but relevent, tasks 
 
 ## The Result
 
-Commits to the plugin repository made during the Google Summer of Code period can be found [here](https://github.com/discourse/discourse-chat-integration/commits/master?until=20170929). 
+Commits to the plugin repository made during the Google Summer of Code period can be found [here](https://github.com/discourse/discourse-chat-integration/commits/master?until=20170829). 
 
 In addition to the code, creating a usable and maintainable product requires good documentation. The [main plugin page](https://meta.discourse.org/t/chatroom-integration-plugin-discourse-chat-integration/66522) lists the key features of the plugin, as well as including links to setup instructions for every provider that is supported. 
 
