@@ -9,7 +9,7 @@ description = "Creating a chatroom integration plugin for Discourse, the open so
 
 I have spent this summer working on the [Discourse](https://discourse.org) project as part of [Google Summer of Code](https://summerofcode.withgoogle.com/). The end result of my project is the [discourse-chat-integration](https://meta.discourse.org/t/chatroom-integration-plugin-discourse-chat-integration/66522) plugin.
 
-The Discourse chatroom integration plugin allows sending notifications about new Discourse posts to 'group chats' on a large number of instant messaging platforms including Slack, Telegram, Discord, HipChat, Mattermost, Matrix, Zulip and Rocket Chat. Notifications can be triggered by new topics, new replies, messages to a group, or mentions of a group. 
+The 'Discourse Chatroom Integration Plugin' allows sending notifications about new Discourse posts to 'group chats' on a large number of instant messaging platforms including Slack, Telegram, Discord, HipChat, Mattermost, Matrix, Zulip and Rocket Chat. Notifications can be triggered by new topics, new replies, messages to a group, or mentions of a group. 
 
 This post will provide a brief summary of my work, and the new functionality it provides.
 
@@ -52,7 +52,7 @@ In addition to the code, creating a usable and maintainable product requires goo
 
 [Documentation for contributers](https://meta.discourse.org/t/adding-a-new-provider-to-discourse-chat-integration/68156?u=david_taylor) was also written to make it easier for others to improve the plugin in future.
 
-## Conclusion
+## The Future
 
 I have enjoyed being a part of the Discourse community this summer, and hope to continue my involvement into the future. The key things I will take away are:
 
